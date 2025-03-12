@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import Menu from "@/app/components/shared/Menu";
 import { ThemeProvider } from "./providers/ThemeProvider";
 import { SystemThemeProvider } from "./providers/SystemThemeProvider";
+import { DragDropProvider } from "./providers/DragDropContext";
 
 export const metadata = {
   title: "Smart Insurance Portal",
@@ -22,9 +23,11 @@ export default function RootLayout({
       <body className="dark:bg-[#303030]">
         <SystemThemeProvider>
           <ThemeProvider>
-            <Menu />
-            <QueryProvider>{children}</QueryProvider>
-            <Toaster />
+            <DragDropProvider>
+              <Menu />
+              <QueryProvider>{children}</QueryProvider>
+              <Toaster />
+            </DragDropProvider>
           </ThemeProvider>
         </SystemThemeProvider>
       </body>
