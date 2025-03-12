@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
+import { DndContext, closestCenter, DragEndEvent, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
@@ -32,6 +32,14 @@ export const DragDropProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [forms, setForms] = useState<FormFields[]>([]);
 
+  const pointerSensor = useSensor(PointerSensor, {
+    activationConstraint: {
+      distance: 10,
+    },
+  });
+
+  const sensors = useSensors(pointerSensor);
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -45,7 +53,7 @@ export const DragDropProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <DragDropContext.Provider value={{ forms, setForms, handleDragEnd }}>
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={forms.map((form) => form.formId)}
           strategy={verticalListSortingStrategy}
