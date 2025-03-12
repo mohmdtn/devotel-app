@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { FiSun, FiMoon } from "react-icons/fi";
 import { MdSettingsBrightness } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
@@ -14,7 +14,7 @@ const ThemeSetting = () => {
   interface ThemeItem {
     id: string;
     value: UserPreference;
-    icon: JSX.Element;
+    icon: ReactNode;
   }
 
   const items: ThemeItem[] = [
