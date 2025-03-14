@@ -1,25 +1,20 @@
 "use client";
 
-import Link from "next/link";
-import React from "react";
 import ThemeSetting from "./ThemeSetting";
+import MenuItem from "./MenuItem";
+
+const menuItems = [
+  { name: "Home", link: "/" },
+  { name: "Submissions", link: "/submissions" },
+];
 
 const Menu = () => {
   return (
     <section className="flex gap-4 justify-between items-center px-6 py-4">
       <div className="flex gap-4 justify-center">
-        <Link
-          className="text-lg font-bold duration-150 text-gray-500 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-400"
-          href="/"
-        >
-          Home
-        </Link>
-        <Link
-          className="text-lg font-bold duration-150 text-gray-500 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-400"
-          href="/submissions"
-        >
-          Submissions
-        </Link>
+        {menuItems.map((item, index) => (
+          <MenuItem key={index} name={item.name} link={item.link} />
+        ))}
       </div>
       <div className="flex gap-2 justify-center items-center">
         <ThemeSetting />
