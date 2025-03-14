@@ -16,7 +16,8 @@ export default function HomePage() {
   const { forms, setForms } = useDragDropContext();
   const [formValues, setFormValues] = useState<Record<string, unknown>>({});
   const [states, setStates] = useState<string[]>([]);
-
+  const [form] = Form.useForm();
+  
   const { data, isLoading } = useQuery({
     queryFn: GetForms,
     queryKey: ["dynamicForm"],
@@ -44,8 +45,15 @@ export default function HomePage() {
 
   useEffect(() => {
     if (stateData) setStates(stateData);
-  }, [stateData, setStates]); 
-  console.log(stateLoading)
+  }, [stateData, setStates]);
+
+  useEffect(() => {
+    setFormValues((prev) => ({
+      ...prev,
+      state: undefined,
+    }));
+    form.resetFields(["state"]);
+  }, [form, formValues.country]);
 
   const handleFieldChange = (key: string, value: unknown) => {
     setFormValues((prev) => ({
@@ -151,7 +159,7 @@ export default function HomePage() {
 
   return (
     <div className="p-2 md:p-6 md:pt-0 flex justify-center flex-col items-center">
-      <Form layout="vertical" onFinish={onFinish} className="w-full">
+      <Form form={form} layout="vertical" onFinish={onFinish} className="w-full">
         <section className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-6">
           {forms.map(({ title, formId, fields }) => (
             <SortableItem key={formId} id={formId}>
