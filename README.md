@@ -41,10 +41,8 @@ app
 ├── providers
 ├── services
 │   └── apis
-├── submissions
-├── types
-├── public
-└── styles
+├── submissions(page)
+└── types
 ```
 
 ---
@@ -96,4 +94,4 @@ yarn start
 
 ---
 
-# 🚀 Develope by Mohammad Taghinasab
+🚀 Develop by Mohammad Taghinasab
