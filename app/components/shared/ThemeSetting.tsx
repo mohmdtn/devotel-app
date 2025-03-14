@@ -71,8 +71,8 @@ const ThemeSetting = () => {
                 : ""
             }`}
           >
-            <div>{item.icon}</div>
-            <div>{item.value}</div>
+            <div className="text-gray-900 dark:text-gray-200">{item.icon}</div>
+            <div className="text-gray-900 dark:text-gray-300">{item.value}</div>
             {userPreference === item.id && (
               <FaCheck
                 size={10}
