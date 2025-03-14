@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import GetForms from "./services/apis/GetForms";
 import Loading from "./components/shared/Loading";
 import AddForms from "./services/apis/AddForms";
+import GetStates from "./services/apis/GetStates";
 import { useDragDropContext } from "@/app/providers/DragDropContext";
 import { SortableItem } from "./components/shared/SortableItem";
 import { Form, Radio, Select, Input, Checkbox, Button } from "antd";
@@ -14,6 +15,7 @@ import { FormField } from "@/app/types/form";
 export default function HomePage() {
   const { forms, setForms } = useDragDropContext();
   const [formValues, setFormValues] = useState<Record<string, unknown>>({});
+  const [states, setStates] = useState<string[]>([]);
 
   const { data, isLoading } = useQuery({
     queryFn: GetForms,
@@ -27,14 +29,24 @@ export default function HomePage() {
   });
 
   const onFinish = async (values: Record<string, unknown>) => {
-    mutateAsync(values);
+    await mutateAsync(values);
   };
+
+  const { data: stateData, isLoading: stateLoading } = useQuery({
+    queryFn: () => GetStates({ country: formValues.country as string }),
+    queryKey: ["states", formValues.country],
+    enabled: !!formValues.country,
+  });
 
   useEffect(() => {
     if (data) setForms(data);
   }, [data, setForms]);
 
-  // FORM RENDER FUNCTIONALITIES
+  useEffect(() => {
+    if (stateData) setStates(stateData);
+  }, [stateData, setStates]); 
+  console.log(stateLoading)
+
   const handleFieldChange = (key: string, value: unknown) => {
     setFormValues((prev) => ({
       ...prev,
@@ -59,13 +71,11 @@ export default function HomePage() {
 
     if (!isFieldVisible(field)) return null;
 
-    const handleChange = (value: unknown) => handleFieldChange(id, value);
-
     switch (type) {
       case "text":
         return (
           <Form.Item key={id} label={label} name={id} rules={[{ required }]}>
-            <Input onChange={(e) => handleChange(e.target.value)} />
+            <Input onChange={(e) => handleFieldChange(id, e.target.value)} />
           </Form.Item>
         );
       case "number":
@@ -73,29 +83,38 @@ export default function HomePage() {
           <Form.Item key={id} label={label} name={id} rules={[{ required }]}>
             <Input
               type="number"
-              onChange={(e) => handleChange(e.target.value)}
+              onChange={(e) => handleFieldChange(id, e.target.value)}
             />
           </Form.Item>
         );
       case "date":
         return (
           <Form.Item key={id} label={label} name={id} rules={[{ required }]}>
-            <Input type="date" onChange={(e) => handleChange(e.target.value)} />
+            <Input type="date" onChange={(e) => handleFieldChange(id, e.target.value)} />
           </Form.Item>
         );
       case "select":
-        return (
+        return id === "state" ? (
+          <Form.Item key={id} label={label} name={id} rules={[{ required }]}>
+            <Select
+              options={states.map((state) => ({ value: state, label: state }))}
+              onChange={(value) => handleFieldChange(id, value)}
+              loading={stateLoading}
+              disabled={stateLoading}
+            />
+          </Form.Item>
+        ) : (
           <Form.Item key={id} label={label} name={id} rules={[{ required }]}>
             <Select
               options={options?.map((opt) => ({ value: opt, label: opt }))}
-              onChange={handleChange}
+              onChange={(value) => handleFieldChange(id, value)}
             />
           </Form.Item>
-        );
+      );
       case "radio":
         return (
           <Form.Item key={id} label={label} name={id} rules={[{ required }]}>
-            <Radio.Group onChange={(e) => handleChange(e.target.value)}>
+            <Radio.Group onChange={(e) => handleFieldChange(id, e.target.value)}>
               {options?.map((opt) => (
                 <Radio key={opt} value={opt}>
                   {opt}
@@ -109,7 +128,7 @@ export default function HomePage() {
           <Form.Item key={id} label={label} name={id} valuePropName="checked">
             <Checkbox.Group
               options={options}
-              onChange={(checkedValues) => handleChange(checkedValues)}
+              onChange={(checkedValues) => handleFieldChange(id, checkedValues)}
             />
           </Form.Item>
         );
